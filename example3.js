@@ -7,51 +7,102 @@ $(document).ready(function(){
   var svg = d3.select("#viz_area");
   var data = [
     [["Select:"], ["Adam"], ["Ben"], ["Charlie"]],
-    [["Frequents"], ["Person", "Bar"], ["Adam", "Bar 1"], ["Adam", "Bar 2"], ["Ben", "Bar 3"], ["Charlie", "Bar 1"], ["Charlie", "Bar 3"]],
-    [["Serves"], ["Bar", "Beer"], ["Bar 1", "Bud Light"], ["Bar 1", "PBR"], ["Bar 2", "Blue Moon"], ["Bar 3", "Blue Moon"], ["Bar 3", "PBR"]]
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]],
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]],
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]],
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]],
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]],
+    [["Likes"], ["Person", "Beer"], ["Adam", "Bud Light"], ["Adam", "PBR"], ["Ben", "Blue Moon"], ["Charlie", "Bud Light"]]
   ];
-  var querytext = ["SELECT F.person", "FROM Frequents", "WHERE not exists (", "SELECT *", "FROM Serves", "WHERE F.bar = S.bar and S.beer = PBR", ")"];
-  var qtextindent = [0, 0, 0, 1, 1, 1, 0];
+  var querytext = ["SELECT F.person", "FROM Likes L1", "WHERE ..."]; // not exists (", "SELECT *", "FROM Serves", "WHERE S.bar = F.bar", "AND not exists (", "SELECT L.drink", "FROM Likes L", "WHERE F.person = L.person", "AND L.drink = S.drink", ")", ")"];
+  var qtextindent = [0, 0, 0];
   const emojiX = "\u274C";
   const emojiCk = "\u2705";
-  var querytree = [
-    {value: "#t0r1", all: false, children: [1, 2], prev: -1, color: 0, emoji: ""},
-    {value: "#t1r2", all: true, children: [3], prev: 0, color: 1, emoji: ""},
-    {value: "#t1r3", all: true, children: [4], prev: 0, color: 1, emoji: ""},
-    {value: "#t2r3", all: false, children: [], prev: 1, color: 2, emoji: emojiX},
-    {value: "#t1r3", all: false, children: [], prev: 2, color: 1, emoji: emojiCk},
-    {value: "#t0r2", all: false, children: [6], prev: -1, color: 0, emoji: ""},
-    {value: "#t1r4", all: true, children: [7], prev: 5, color: 1, emoji: ""},
-    {value: "#t2r6", all: false, children: [], prev: 6, color: 2, emoji: emojiX},
-    {value: "#t0r3", all: false, children: [9, 10], prev: -1, color: 0, emoji: ""},
-    {value: "#t1r5", all: true, children: [11], prev: 8, color: 1, emoji: ""},
-    {value: "#t1r6", all: true, children: [12], prev: 8, color: 1, emoji: ""},
-    {value: "#t2r3", all: false, children: [], prev: 9, color: 2, emoji: emojiX},
-    {value: "#t2r6", all: false, children: [], prev: 10, color: 2, emoji: emojiX},
+  var querytree = [  // TODO: COMBINE ARROWS INTO QTREE DATA. REMOVE PREV, COLORDATA
+    {value: "#t0r2", all: false, children: [1], prev: -1, color: 0, emoji: ""},
+    {value: "#t1r4", all: true, children: [2, 3, 4], prev: 0, color: 1, emoji: ""},
+    {value: "#t2r2", all: true, children: [5, 6, 15], prev: 1, color: 2, emoji: ""},
+    {value: "#t2r3", all: true, children: [9, 10, 17], prev: 1, color: 2, emoji: ""},
+    {value: "#t2r5", all: true, children: [13, 19], prev: 1, color: 2, emoji: ""},
+    {value: "#t3r2", all: true, children: [7], prev: 2, color: 2, emoji: ""},
+    {value: "#t3r3", all: true, children: [8], prev: 2, color: 2, emoji: ""},
+    {value: "#t3r2", all: false, children: [], prev: 5, color: 2, emoji: emojiCk},
+    {value: "#t3r3", all: false, children: [], prev: 6, color: 2, emoji: emojiCk},
+    {value: "#t3r2", all: true, children: [11], prev: 3, color: 2, emoji: ""},
+    {value: "#t3r3", all: true, children: [12], prev: 3, color: 2, emoji: ""},
+    {value: "#t3r2", all: false, children: [], prev: 9, color: 2, emoji: emojiCk},
+    {value: "#t3r3", all: false, children: [], prev: 10, color: 2, emoji: emojiCk},
+    {value: "#t3r5", all: true, children: [14], prev: 4, color: 2, emoji: ""},
+    {value: "#t3r5", all: false, children: [], prev: 13, color: 2, emoji: emojiCk},
+    
+    {value: "#t5r4", all: true, children: [16], prev: 2, color: 2, emoji: ""}, //15
+    {value: "#t5r4", all: false, children: [], prev: 15, color: 2, emoji: emojiCk},
+    {value: "#t5r4", all: true, children: [18], prev: 3, color: 2, emoji: ""}, //17
+    {value: "#t5r4", all: false, children: [], prev: 17, color: 2, emoji: emojiCk},
+    {value: "#t5r4", all: true, children: [20], prev: 4, color: 2, emoji: ""}, //19
+    {value: "#t5r4", all: false, children: [], prev: 19, color: 2, emoji: emojiCk},
+
+    // {value: "#t0r2", all: false, children: [10], prev: -1, color: 0, emoji: ""}, // 9
+    // {value: "#t1r4", all: true, children: [11, 12], prev: 9, color: 1, emoji: ""},
+    // {value: "#t2r5", all: true, children: [13], prev: 10, color: 2, emoji: ""},
+    // {value: "#t2r6", all: true, children: [14], prev: 10, color: 2, emoji: ""},
+    // {value: "#t3r4", all: false, children: [], prev: 11, color: 2, emoji: emojiCk},
+    // {value: "#t2r6", all: false, children: [], prev: 12, color: 2, emoji: emojiX},
+
+    // {value: "#t0r3", all: false, children: [16, 17], prev: -1, color: 0, emoji: ""}, // 15
+    // {value: "#t1r5", all: true, children: [18, 19], prev: 15, color: 1, emoji: ""},
+    // {value: "#t1r6", all: true, children: [22, 23], prev: 15, color: 1, emoji: ""},
+    // {value: "#t2r2", all: true, children: [20], prev: 16, color: 2, emoji: ""},
+    // {value: "#t2r3", all: true, children: [21], prev: 16, color: 2, emoji: ""},
+    // {value: "#t3r6", all: false, children: [], prev: 18, color: 2, emoji: emojiCk},
+    // {value: "#t2r3", all: false, children: [], prev: 19, color: 2, emoji: emojiX},
+
+    // {value: "#t2r5", all: true, children: [24], prev: 17, color: 2, emoji: ""},
+    // {value: "#t2r6", all: true, children: [25], prev: 17, color: 2, emoji: ""},
+    // {value: "#t3r5", all: false, children: [], prev: 22, color: 2, emoji: emojiCk},
+    // {value: "#t2r6", all: false, children: [], prev: 23, color: 2, emoji: emojiX},
   ];
   var currentPos = [];
   var colordata = [  // r1 color (on click), r2, r3, etc.
     [0, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 1],
-    [0, 0, 0, 2, 0, 0, 2]
+    [0, 0, 1, 1, 1, 1],
+    [0, 0, 2, 2, 2, 2],
+    [0, 0, 2, 2, 2, 2],
+    [0, 0, 2, 2, 2, 2],
+    [0, 0, 2, 2, 2, 2],
+    [0, 0, 2, 2, 2, 2]
   ];
-  var selecthighlights = [0, 1, 2, 2];
+  var selecthighlights = [0, 1, 1, 1];
   const tabledata = [  // xpos, ypos, width, height, nrows, ncols, fontsize, tableid
-    [100, 70, 150, 200, 4, 1, 20, 0],
-    [400, 30, 250, 300, 7, 2, 20, 1],
-    [800, 30, 250, 300, 7, 2, 20, 2]
+    [100, 250, 150, 200, 4, 1, 20, 0],
+    [400, 200, 250, 260, 6, 2, 20, 1],
+    [800, 200, 250, 260, 6, 2, 20, 2],
+    [1200, 30, 250, 260, 6, 2, 20, 3],
+    [1600, 30, 250, 260, 6, 2, 20, 4],
+    [1200, 400, 250, 260, 6, 2, 20, 5],
+    [1600, 400, 250, 260, 6, 2, 20, 6],
   ];
-  const arrowdata = [  // tableid1, row1, tableid2, row2, isdotted
-    [0, 1, 1, 2, true],
-    [0, 1, 1, 3, true],
-    [1, 2, 2, 3, false],
-    [1, 3, 1, 3, false],
-    [0, 2, 1, 4, true],
-    [0, 3, 1, 5, true],
-    [0, 3, 1, 6, true],
-    [1, 4, 2, 6, false],
-    [1, 5, 2, 3, false],
-    [1, 6, 2, 6, false],
+  const arrowdata = [  // tableid1, row1, tableid2, row2, isdotted, prevIdx
+    [0, 2, 1, 4, true, -1],
+    [1, 4, 2, 2, false, 0],
+    [1, 4, 2, 3, false, 0],
+    [1, 4, 2, 5, false, 0],
+    [2, 2, 3, 2, false, 1],
+    [2, 2, 3, 3, false, 1],
+    [2, 2, 5, 4, false, 1],
+    [2, 3, 3, 2, false, 1],
+    [2, 3, 3, 3, false, 1],
+    [2, 3, 5, 4, false, 1],
+    [2, 5, 3, 5, false, 1],
+    [2, 5, 5, 4, false, 1],
+    [3, 2, 3, 2, false, 2],
+    [3, 3, 3, 3, false, 2],
+    [3, 2, 3, 2, false, 3],
+    [3, 3, 3, 3, false, 3],
+    [3, 5, 3, 5, false, 4],
+    [5, 4, 5, 4, false, 2],
+    [5, 4, 5, 4, false, 3],
+    [5, 4, 5, 4, false, 4]
   ];
   $('#viz_area').click(function(e) {
     var posX = $(this).position().left, posY = $(this).position().top;
@@ -227,7 +278,6 @@ function findAndDrawNewArrows(tdata, adata, svg){
       ys = tdata[adat[2]][1] + tdata[adat[2]][3]*(2*adat[3] + 1)/(2*tdata[adat[2]][4]);
       drawArrow(xs, ys, (xf + xs)/2, ys, (xf + xs)/2, yf, xf, yf, adat[4], "a" + i.toString(), svg);
     } else if (adat[0] == adat[2] && adat[1] == adat[3]){
-      console.log(tdata[adat[0]][0] + tdata[adat[0]][2], )
       xs = tdata[adat[0]][0] + tdata[adat[0]][2];
       ys = tdata[adat[0]][1] + tdata[adat[0]][3]*(2*adat[1] + 1)/(2*tdata[adat[0]][4]);
       drawArrow(xs, ys, xs + 50, ys + 50, xs + 50, ys - 50, xs, ys, adat[4], "a" + i.toString(), svg);
@@ -236,7 +286,7 @@ function findAndDrawNewArrows(tdata, adata, svg){
       ys = tdata[adat[0]][1] + tdata[adat[0]][3]*(2*adat[1] + 1)/(2*tdata[adat[0]][4]);
       xf = tdata[adat[2]][0] + tdata[adat[2]][2];
       yf = tdata[adat[2]][1] + tdata[adat[2]][3]*(2*adat[3] + 1)/(2*tdata[adat[2]][4]);
-      drawArrow(xs, ys, Math.max(xs, xf) + 30, ys, Math.max(xs, xf) + 30, yf, xf, yf, adat[4], "a" + i.toString(), svg);
+      drawArrow(xs, ys, Math.max(xs, xf) + 70, ys, Math.max(xs, xf) + 70, yf, xf, yf, adat[4], "a" + i.toString(), svg);
     }
     i += 1;
   }
@@ -321,7 +371,7 @@ function clickhandler(xpos, ypos, tdata, cdata, adata, qtree, curPos, svg){
                   }
                 }
                 found = true;
-                turnOnBox(id, cdata[row[7]][rnum], qtree[adjInd].emoji, adata);
+                turnOnBox(id, cdata[row[7]][rnum], qtree[adjInd].emoji, adata, curPos[i]);
                 curPos.push(adjInd);
                 if (qtree[adjInd].emoji != "") {
                   // setTimeout(backtrack, 2000, adjInd, qtree);
@@ -338,11 +388,12 @@ function clickhandler(xpos, ypos, tdata, cdata, adata, qtree, curPos, svg){
   console.log(curPos);
 }
 
-function turnOnBox(id, clr, emoji, adata){
+function turnOnBox(id, clr, emoji, adata, prevIdx){
+  console.log("previous idx:", prevIdx)
   tid = parseInt(id[2]);
   rid = parseInt(id.substring(4));
   adata.forEach(function (arrow, i){
-    if (arrow[0] == tid && arrow[1] == rid){
+    if (arrow[0] == tid && arrow[1] == rid && arrow[5] == prevIdx){
       d3.select("#a" + i.toString()).attr("stroke", "black");
       d3.select("#ma" + i.toString()).attr("fill", "black").attr("stroke", "black");
     }
@@ -374,7 +425,7 @@ function turnOffAllOthers(id, clr, adata, qtree){
   for (sq of qtree){
     turnOffBox(sq.value, adata);
   }
-  turnOnBox(id, clr, "", adata);
+  turnOnBox(id, clr, "", adata, -1);
 }
 
 function findObjInTree(id, qtree){
@@ -393,7 +444,7 @@ function backtrack(curqtreeInd, qtree){
   var cur_index = curqtreeInd;
   var cur_obj = qtree[curqtreeInd];
   while (true){
-    if (one_seen && qtree[cur_index].color == 2){
+    if (one_seen && one_seen_item.value != qtree[cur_index].value && qtree[cur_index].color == 2){
       d3.select(one_seen_item.value).transition().duration(200).style("fill", "white").transition().duration(1000).style("fill", "lightblue");
       d3.select(cur_obj.value).transition().duration(200).style("fill", "white").transition().duration(1000).style("fill", "lightblue");
       one_seen = false;
